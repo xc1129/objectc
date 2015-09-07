@@ -15,6 +15,8 @@ class ViewController: UIViewController {
 
     var userIsInTheMiddleOfTypingANumber = false
     
+    var brain = CalculatorBrain()
+    
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
@@ -31,56 +33,29 @@ class ViewController: UIViewController {
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
-        switch operation {
-            case "✕": performOperation(mutiply)
-            case "÷": performOperation(divide)
-            case "+": performOperation(plus)
-            case "-": performOperation(minus)
-            case "√": performOperation(square)
-        default: break
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            }
+            else {
+                displayValue = 0
+            }
         }
+ 
     }
     
-    func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2  {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    private func performOperation(operation: Double -> Double) {
-        if operandStack.count >= 1  {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    func mutiply(op1: Double,op2: Double) -> Double {
-        return op1 * op2
-    }
-    
-    func divide(op1: Double,op2: Double) -> Double {
-        return op2 / op1
-    }
-    
-    func plus(op1: Double,op2: Double) -> Double {
-        return op1 + op2
-    }
-    
-    func minus(op1: Double,op2: Double) -> Double {
-        return op1 - op2
-    }
-    
-    func square(op1: Double) ->Double {
-        return sqrt(op1);
-    }
-    
-    var operandStack = Array<Double>()
+ 
+
+  
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
-        println(operandStack);
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        }
+        else {
+            displayValue = 0
+        }
     }
     
     var displayValue: Double {
